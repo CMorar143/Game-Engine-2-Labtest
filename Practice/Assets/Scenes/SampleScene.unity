@@ -167,6 +167,10 @@ MonoBehaviour:
   FleeEnabled: 0
   PlayerSteeringEnabled: 1
   playerForce: 100
+  jitterEnabled: 1
+  distance: 15
+  radius: 10
+  jitter: 100
   FollowPathEnabled: 0
   banking: 0.1
   damping: 0.01
@@ -237,7 +241,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 670687280}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: -1.1075976, y: 0.31351972, z: -1.3420635}
   m_LocalScale: {x: 1, y: 1, z: 2.5}
   m_Children: []
   m_Father: {fileID: 0}

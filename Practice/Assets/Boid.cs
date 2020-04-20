@@ -23,6 +23,35 @@ public class Boid : MonoBehaviour
 	public bool PlayerSteeringEnabled = false;
 	public float playerForce = 100;
 
+	// For jitter behaviour
+	public bool jitterEnabled = false;
+	public float distance = 15.0f;
+	public float radius = 10;
+	public float jitter = 100;
+
+	Vector3 selfTarget;
+	Vector3 worldTarget;
+
+	public void OnDrawGizmos()
+	{
+		Vector3 localCP = Vector3.forward * distance;
+		Vector3 worldCP = transform.TransformPoint(localCP);
+		Gizmos.color = Color.green;
+		Gizmos.DrawLine(transform.position, worldCP);
+		Gizmos.DrawWireSphere(worldCP, radius);
+		Vector3 localTarget = (Vector3.forward * distance) + target;
+		worldTarget = transform.TransformPoint(localTarget);
+		Gizmos.color = Color.red;
+		Gizmos.DrawSphere(worldTarget, 1);
+		Gizmos.color = Color.blue;
+		Gizmos.DrawLine(transform.position, worldTarget);
+
+		//For other behaviour
+		Gizmos.color = Color.red;
+		Gizmos.DrawRay(transform.position, force * 5);
+		Gizmos.DrawRay(transform.position, acceleration * 5);
+	}
+
 	public Vector3 PlayerSteering()
 	{
 		Vector3 force = Vector3.zero;
@@ -36,14 +65,6 @@ public class Boid : MonoBehaviour
 		return force;
 	}
 
-	public void OnDrawGizmos()
-	{
-		Gizmos.color = Color.red;
-		Gizmos.DrawRay(transform.position, force * 5);
-		Gizmos.DrawRay(transform.position, acceleration * 5);
-
-	}
-
 	public bool FollowPathEnabled = false;
 
 	private Vector3 nextWaypoint;
@@ -54,7 +75,7 @@ public class Boid : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-
+		target = Random.insideUnitSphere * radius;
 	}
 
 
@@ -92,6 +113,19 @@ public class Boid : MonoBehaviour
 		return desired - velocity;
 	}
 
+	public Vector3 Jitter()
+	{
+		Vector3 disp = jitter * Random.insideUnitSphere * Time.deltaTime;
+		target += disp;
+		target.Normalize();
+		target *= radius;
+		
+		Vector3 localTarget = (Vector3.forward * distance) + target;
+
+		worldTarget = transform.TransformPoint(localTarget);
+		return worldTarget - transform.position;
+	}
+
 	Vector3 CalculateForces()
 	{
 		Vector3 force = Vector3.zero;
@@ -117,6 +151,11 @@ public class Boid : MonoBehaviour
 		if (PlayerSteeringEnabled)
 		{
 			force += PlayerSteering();
+		}
+
+		if (jitterEnabled)
+		{
+			force += Jitter();
 		}
 
 		return force;
